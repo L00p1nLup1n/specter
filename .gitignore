@@ -16,6 +16,7 @@ env/
 
 # Environment / secrets
 .env
+specter.local.toml
 
 # Semgrep
 .semgrep_cache/
