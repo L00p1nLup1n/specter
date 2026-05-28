@@ -1,0 +1,27 @@
+rules:
+  - id: sql-string-concatenation
+    patterns:
+      - pattern: |
+          $QUERY = "..." + $VAR
+      - pattern-either:
+          - pattern: |
+              cursor.execute($QUERY + $VAR)
+          - pattern: |
+              cursor.execute("..." + $VAR)
+          - pattern: |
+              cursor.execute(f"...{$VAR}...")
+          - pattern: |
+              db.execute(f"...{$VAR}...")
+    message: >
+      SQL query built via string concatenation or f-string — high risk of SQL injection.
+      Use parameterized queries instead.
+    languages: [python]
+    severity: ERROR
+
+  - id: sql-format-string
+    pattern: |
+      cursor.execute("..." % $ARGS)
+    message: >
+      SQL query uses %-formatting — SQL injection risk.
+    languages: [python]
+    severity: ERROR

@@ -1,0 +1,27 @@
+rules:
+  - id: use-of-md5
+    patterns:
+      - pattern: hashlib.md5(...)
+      - pattern: |
+          import md5
+    message: >
+      MD5 is cryptographically broken and should not be used for security purposes.
+      Use SHA-256 or better.
+    languages: [python]
+    severity: ERROR
+
+  - id: use-of-sha1
+    pattern: hashlib.sha1(...)
+    message: >
+      SHA-1 is deprecated for security use. Use SHA-256 or SHA-3 instead.
+    languages: [python]
+    severity: WARNING
+
+  - id: pycrypto-des
+    patterns:
+      - pattern: DES.new(...)
+      - pattern: DES3.new(...)
+    message: >
+      DES/3DES are deprecated and insecure. Use AES instead.
+    languages: [python]
+    severity: ERROR

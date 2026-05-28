@@ -1,0 +1,27 @@
+rules:
+  - id: unvalidated-user-input-exec
+    patterns:
+      - pattern: exec($INPUT)
+      - pattern: eval($INPUT)
+      - pattern: os.system($INPUT)
+      - pattern: subprocess.call($INPUT, shell=True)
+      - pattern: subprocess.run($INPUT, shell=True)
+    message: >
+      Executing unvalidated input — command injection or arbitrary code execution risk.
+    languages: [python]
+    severity: ERROR
+
+  - id: open-file-from-input
+    pattern: open($INPUT, ...)
+    message: >
+      Opening file from potentially unsanitized input. Validate and sanitize path first.
+    languages: [python]
+    severity: WARNING
+
+  - id: format-string-from-input
+    pattern: |
+      $X.format(**$REQUEST)
+    message: >
+      Format string populated from request data — potential injection or information leak.
+    languages: [python]
+    severity: WARNING

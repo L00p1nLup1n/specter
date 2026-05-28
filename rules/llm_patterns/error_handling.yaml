@@ -1,0 +1,23 @@
+rules:
+  - id: bare-except
+    pattern: |
+      try:
+        ...
+      except:
+        ...
+    message: >
+      Bare except clause catches all exceptions including KeyboardInterrupt and SystemExit.
+      Catch specific exceptions instead.
+    languages: [python]
+    severity: WARNING
+
+  - id: empty-except-pass
+    pattern: |
+      try:
+        ...
+      except $E:
+        pass
+    message: >
+      Exception silently swallowed with pass. Add logging or re-raise.
+    languages: [python]
+    severity: WARNING
