@@ -1,15 +1,20 @@
+[global]
+timeout = 60000
+
 [claude]
 model = "claude-sonnet-4-20250514"
+max_output_tokens = 1024
 
 [gemini]
 model = "gemini-2.0-flash"
+max_output_tokens = 4096
 
 [semgrep]
 timeout = 30
 rules_dir = "rules/llm_patterns"
 
 [scoring]
-max_tokens = 8000
+max_diff_chars = 8000
 
 [scoring.severity_order]
 CRITICAL = 4
