@@ -1,7 +1,7 @@
 import pytest
-from analyzer.scorer import combine_findings, AuditResult, Finding
-from analyzer.semgrep import SemgrepFinding
-from analyzer.claude import ClaudeFinding
+from specter.analyzer.scorer import combine_findings, AuditResult, Finding
+from specter.analyzer.semgrep import SemgrepFinding
+from specter.analyzer.claude import ClaudeFinding
 
 
 def make_semgrep(severity="HIGH", filename="a.py", line=1):
@@ -38,7 +38,6 @@ def test_risk_label(semgrep_f, claude_f, expected_level):
 
 
 def test_score_capped_at_100():
-    # Many CRITICAL findings would exceed 100 without the cap
     findings = [make_semgrep("CRITICAL", line=i) for i in range(10)]
     result = combine_findings(findings, [], "")
     assert result.risk_score == 100
@@ -63,7 +62,6 @@ def test_summary_propagated():
 
 
 def test_deduplication_same_source_keeps_highest_severity():
-    # Two semgrep rules firing at the same line → merged to highest severity
     sf = [make_semgrep("HIGH", line=10), make_semgrep("MEDIUM", line=10)]
     result = combine_findings(sf, [], "")
     assert len(result.findings) == 1
@@ -71,7 +69,6 @@ def test_deduplication_same_source_keeps_highest_severity():
 
 
 def test_deduplication_cross_source_same_line_kept_separately():
-    # semgrep and claude at the same line are NOT merged (distinct issues)
     sf = [make_semgrep("HIGH", line=10)]
     cf = [make_claude("MEDIUM", line=10)]
     result = combine_findings(sf, cf, "")
@@ -88,7 +85,6 @@ def test_deduplication_different_lines_not_merged():
 
 
 def test_deduplication_score_counts_cross_source_separately():
-    # Cross-source same-line findings are kept separately, both contribute to score
     sf = [make_semgrep("HIGH", line=10)]
     cf = [make_claude("MEDIUM", line=10)]
     result = combine_findings(sf, cf, "")

@@ -3,8 +3,8 @@ import pytest
 from io import StringIO
 from unittest.mock import patch
 
-from analyzer.scorer import AuditResult, Finding
-from output.formatter import print_json
+from specter.analyzer.scorer import AuditResult, Finding
+from specter.output.formatter import print_json
 
 
 def make_result(risk_level="LOW", score=0, findings=None, summary=""):

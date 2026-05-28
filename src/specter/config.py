@@ -1,4 +1,5 @@
 import os
+from importlib.resources import files as _pkg_files
 from pathlib import Path
 
 import tomllib
@@ -6,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-_ROOT = Path(__file__).parent
+_pkg_data = _pkg_files("specter.data")
 
 
 def _deep_merge(base: dict, override: dict) -> dict:
@@ -19,26 +20,24 @@ def _deep_merge(base: dict, override: dict) -> dict:
     return result
 
 
-try:
-    with open(_ROOT / "specter.toml", "rb") as _f:
-        _cfg = tomllib.load(_f)
-except FileNotFoundError as e:
-    raise FileNotFoundError(
-        f"specter.toml not found; expected at {_ROOT / 'specter.toml'}"
-    ) from e
+with (_pkg_data / "specter.toml").open("rb") as _f:
+    _cfg = tomllib.load(_f)
 
-_local = _ROOT / "specter.local.toml"
+# User-global config at ~/.config/specter/specter.toml
+_global = Path.home() / ".config" / "specter" / "specter.toml"
+if _global.exists():
+    with open(_global, "rb") as _f:
+        _cfg = _deep_merge(_cfg, tomllib.load(_f))
+
+# Per-project override via specter.local.toml in the working directory
+_local = Path.cwd() / "specter.local.toml"
 if _local.exists():
     with open(_local, "rb") as _f:
         _cfg = _deep_merge(_cfg, tomllib.load(_f))
 
 # Secrets — env var takes priority, then specter.local.toml [claude/gemini] api_key
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY") or _cfg.get("claude", {}).get(
-    "api_key", ""
-)
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or _cfg.get("gemini", {}).get(
-    "api_key", ""
-)
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY") or _cfg.get("claude", {}).get("api_key", "")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or _cfg.get("gemini", {}).get("api_key", "")
 
 # Operational settings — from specter.toml (overridable via specter.local.toml)
 TIMEOUT = _cfg["global"]["timeout"]
@@ -48,7 +47,7 @@ GEMINI_MODEL = _cfg["gemini"]["model"]
 GEMINI_MAX_OUTPUT_TOKENS = _cfg["gemini"]["max_output_tokens"]
 
 SEMGREP_TIMEOUT = _cfg["semgrep"]["timeout"]
-RULES_DIR = _ROOT / _cfg["semgrep"]["rules_dir"]
+RULES_DIR = Path(str(_pkg_data)) / _cfg["semgrep"]["rules_dir"]
 
 MAX_DIFF_CHARS = _cfg["scoring"]["max_diff_chars"]
 SEVERITY_ORDER = _cfg["scoring"]["severity_order"]

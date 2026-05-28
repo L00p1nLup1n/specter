@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
-from config import SEVERITY_ORDER
-from analyzer.semgrep import SemgrepFinding
-from analyzer.claude import ClaudeFinding
-from analyzer.gemini import GeminiFinding
+from specter.config import SEVERITY_ORDER
+from specter.analyzer.semgrep import SemgrepFinding
+from specter.analyzer.claude import ClaudeFinding
+from specter.analyzer.gemini import GeminiFinding
 
 
 @dataclass
@@ -11,7 +11,7 @@ class Finding:
     filename: str
     line: int
     severity: str
-    source: str  # "semgrep" | "claude"
+    source: str  # "semgrep" | "claude" | "gemini"
     issue: str
     reason: str
 
@@ -23,7 +23,6 @@ class AuditResult:
     findings: list[Finding]
     summary: str
     counts: dict[str, int]
-
 
 
 def _deduplicate(findings: list[Finding]) -> list[Finding]:

@@ -5,8 +5,8 @@ import os
 from pathlib import Path
 from dataclasses import dataclass
 
-from config import RULES_DIR, SEMGREP_TIMEOUT
-from parser.diff import Hunk
+from specter.config import RULES_DIR, SEMGREP_TIMEOUT
+from specter.parser.diff import Hunk
 
 
 @dataclass
@@ -22,7 +22,6 @@ def run_semgrep(hunks: list[Hunk]) -> list[SemgrepFinding]:
     if not hunks:
         return []
 
-    # Group added lines by filename and write to temp files
     file_map: dict[str, list[tuple[int, str]]] = {}
     for hunk in hunks:
         if hunk.filename not in file_map:
@@ -70,9 +69,6 @@ def run_semgrep(hunks: list[Hunk]) -> list[SemgrepFinding]:
                 continue
 
             for r in data.get("results", []):
-                # line_num = file_map[original_name][
-                #     r.get("start", {}).get("line", 0) - 1
-                # ][0]
                 idx = r.get("start", {}).get("line", 1) - 1
                 line_num = (
                     file_map[original_name][idx][0]

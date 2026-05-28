@@ -1,5 +1,5 @@
 import pytest
-from parser.diff import parse_diff, parse_file_as_hunk, Hunk
+from specter.parser.diff import parse_diff, parse_file_as_hunk, Hunk
 
 SIMPLE_DIFF = """\
 diff --git a/src/auth.py b/src/auth.py
@@ -55,7 +55,6 @@ def test_parse_diff_multi_hunk():
     filenames = [h.filename for h in hunks]
     assert "a.py" in filenames
     assert "b.py" in filenames
-    # a.py has two hunks
     a_hunks = [h for h in hunks if h.filename == "a.py"]
     assert len(a_hunks) == 2
 

@@ -1,5 +1,5 @@
 """Smoke-tests that specter.toml is valid and all required keys are present."""
-import config
+import specter.config as config
 
 
 def test_claude_config():

@@ -36,7 +36,6 @@ _GOOGLE_STATUS_LABELS = {
     503: "Service Unavailable",
 }
 
-# Keyed by gRPC status string (exc.status)
 _GOOGLE_HINTS = {
     "UNAUTHENTICATED": "Check that GEMINI_API_KEY is set correctly.",
     "PERMISSION_DENIED": "The API key does not have access to this resource.",
@@ -96,7 +95,6 @@ def _google_table(exc: genai_errors.APIError) -> Table:
     fallback = f"Unexpected Gemini error (status: {exc.status or 'unknown'}). Check the Gemini API status page."
     hint = _GOOGLE_HINTS.get(exc.status or "", fallback)
     table.add_row("Hint", f"[dim]{hint}[/dim]")
-
 
     return table
 

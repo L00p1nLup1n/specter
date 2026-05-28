@@ -7,19 +7,19 @@ import typer
 from google.genai import errors as genai_errors
 from rich.console import Console
 
-from analyzer.claude import review_hunks as claude_review
-from analyzer.gemini import review_hunks as gemini_review
-from analyzer.scorer import combine_findings
-from analyzer.semgrep import run_semgrep
-from output.formatter import print_json, print_terminal
-from parser.diff import (
+from specter.analyzer.claude import review_hunks as claude_review
+from specter.analyzer.gemini import review_hunks as gemini_review
+from specter.analyzer.scorer import combine_findings
+from specter.analyzer.semgrep import run_semgrep
+from specter.output.formatter import print_json, print_terminal
+from specter.parser.diff import (
     get_file_content,
     get_staged_diff,
     parse_diff,
     parse_file_as_hunk,
 )
-from utils.available_vendors import available_vendors
-from utils.format_json import print_api_error
+from specter.utils.available_vendors import available_vendors
+from specter.utils.format_json import print_api_error
 
 app = typer.Typer(
     name="aiaudit",

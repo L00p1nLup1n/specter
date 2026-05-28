@@ -5,7 +5,7 @@ from rich.table import Table
 from rich import box
 from rich.text import Text
 
-from analyzer.scorer import AuditResult
+from specter.analyzer.scorer import AuditResult
 
 console = Console()
 
@@ -43,7 +43,7 @@ def print_terminal(result: AuditResult) -> None:
             show_header=True,
             header_style="bold",
             padding=(0, 1),
-            show_lines=True
+            show_lines=True,
         )
         table.add_column("Location", style="dim", no_wrap=True)
         table.add_column("Severity", no_wrap=True)
