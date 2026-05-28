@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional
 import subprocess
 import re
@@ -37,8 +38,12 @@ def get_staged_diff() -> Optional[str]:
 
 
 def get_file_content(path: str) -> Optional[str]:
+    resolved = Path(path).resolve()
+    base = Path.cwd().resolve()
+    if not str(resolved).startswith(str(base) + "/") and resolved != base:
+        raise ValueError("Path is outside the project directory")
     try:
-        with open(path, "r", encoding="utf-8", errors="replace") as f:
+        with open(resolved, "r", encoding="utf-8", errors="replace") as f:
             return f.read()
     except FileNotFoundError:
         return None
