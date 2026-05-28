@@ -51,12 +51,14 @@ def run_semgrep(hunks: list[Hunk]) -> list[SemgrepFinding]:
                 [
                     "semgrep",
                     "--config", rules_path,
+                    "--disable-nosem",
                     "--json",
                     tmp_path,
                 ],
                 capture_output=True,
                 text=True,
                 timeout=SEMGREP_TIMEOUT,
+                cwd=tmpdir,
             )
 
             if result.returncode not in (0, 1):
