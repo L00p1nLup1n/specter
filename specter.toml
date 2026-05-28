@@ -1,0 +1,19 @@
+[claude]
+model = "claude-sonnet-4-20250514"
+
+[gemini]
+model = "gemini-2.0-flash"
+
+[semgrep]
+timeout = 30
+rules_dir = "rules/llm_patterns"
+
+[scoring]
+max_tokens = 8000
+
+[scoring.severity_order]
+CRITICAL = 4
+HIGH = 3
+MEDIUM = 2
+LOW = 1
+INFO = 0
