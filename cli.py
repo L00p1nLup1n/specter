@@ -138,7 +138,11 @@ def scan(
 
     # Warn if every requested AI vendor failed — result would be a false negative
     ai_requested = vendors & {"claude", "gemini"}
-    ai_succeeded = {v for v, ok in [("claude", claude_ok), ("gemini", gemini_ok)] if ok and v in vendors}
+    ai_succeeded = {
+        v
+        for v, ok in [("claude", claude_ok), ("gemini", gemini_ok)]
+        if ok and v in vendors
+    }
     if ai_requested and not ai_succeeded:
         console.print("[red]All AI backends failed. Results may be incomplete.[/red]")
         raise typer.Exit(1)
