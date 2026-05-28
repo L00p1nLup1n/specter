@@ -4,7 +4,6 @@ from typing import List, Optional
 
 import anthropic
 import typer
-from click import FileError
 from google.genai import errors as genai_errors
 from rich.console import Console
 
@@ -53,8 +52,9 @@ def scan(
     if file:
         try:
             content = get_file_content(str(file))
-        except FileError as e:
-            console.print(f"[red]{e.message}[/red]")
+        except (ValueError, OSError) as e:
+            console.print(f"[red]Error:[/red] {e}")
+            raise typer.Exit(1)
 
         if content is None:
             console.print(f"[red]Error:[/red] File not found: {file}")
@@ -103,11 +103,13 @@ def scan(
 
     claude_findings = []
     claude_summary = ""
+    claude_ok = False
     if "claude" in vendors:
         try:
             if format == "terminal":
                 console.print("[dim]Sending to Claude for review...[/dim]")
             claude_findings, claude_summary = claude_review(hunks)
+            claude_ok = True
         except RuntimeError as e:
             console.print(f"[yellow]Claude skipped:[/yellow] {e}")
         except (anthropic.AuthenticationError, anthropic.PermissionDeniedError) as e:
@@ -118,11 +120,13 @@ def scan(
 
     gemini_findings = []
     gemini_summary = ""
+    gemini_ok = False
     if "gemini" in vendors:
         try:
             if format == "terminal":
                 console.print("[dim]Sending to Gemini for review...[/dim]")
             gemini_findings, gemini_summary = gemini_review(hunks)
+            gemini_ok = True
         except RuntimeError as e:
             console.print(f"[yellow]Gemini skipped:[/yellow] {e}")
         except genai_errors.ClientError as e:
@@ -131,6 +135,13 @@ def scan(
                 raise typer.Exit(1)
         except Exception as e:
             print_api_error(e, vendor="Gemini")
+
+    # Warn if every requested AI vendor failed — result would be a false negative
+    ai_requested = vendors & {"claude", "gemini"}
+    ai_succeeded = {v for v, ok in [("claude", claude_ok), ("gemini", gemini_ok)] if ok and v in vendors}
+    if ai_requested and not ai_succeeded:
+        console.print("[red]All AI backends failed. Results may be incomplete.[/red]")
+        raise typer.Exit(1)
 
     # 5. Score and output
     result = combine_findings(
