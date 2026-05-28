@@ -4,10 +4,12 @@ timeout = 60000
 [claude]
 model = "claude-sonnet-4-20250514"
 max_output_tokens = 1024
+api_key = ""
 
 [gemini]
 model = "gemini-2.0-flash"
 max_output_tokens = 4096
+api_key = ""
 
 [semgrep]
 timeout = 30
