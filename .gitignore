@@ -16,11 +16,24 @@ env/
 
 # Environment / secrets
 .env
+.env.*
+!.env.example
 specter.local.toml
+*.pem
+*.key
+credentials.json
 
 # Semgrep
 .semgrep_cache/
 .semgrep/
+
+# Test / tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# graphify generated output (local artifact, not source)
+graphify-out/
 
 # Editor
 .vscode/
